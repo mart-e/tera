@@ -76,8 +76,11 @@ impl StoredFilter {
     }
 }
 
-pub(crate) fn safe(val: Cow<'_, str>, _: Kwargs, _: &State) -> Value {
-    Value::safe_string(&val)
+pub(crate) fn safe(val: &Value, _: Kwargs, _: &State) -> TeraResult<Value> {
+    if val.is_undefined() {
+        return Err(Error::message("'safe' called on an undefined value"));
+    }
+    Ok(Value::safe_string(&val.to_string()))
 }
 
 pub(crate) fn default(val: Value, kwargs: Kwargs, _: &State) -> TeraResult<Value> {
